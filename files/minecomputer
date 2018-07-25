@@ -1,0 +1,26 @@
+{
+  {
+    "mine",
+    "--EDIT CODE INSIDE <> TO YOUR PERSONAL SETUP THEN GET RID OF THE <>\
+rednet.open(\"top\")\
+print(\"Type /help to list commands\")\
+while true do\
+	input = read()\
+	rednet.broadcast(input)\
+	  if input == \"stop\" then\
+	    print(\"Disconnected\")\
+		break\
+	  elseif input == \"/help\" then\
+	    print(\"miner\") --Program from pastebin PL3A2SbL/7hcqH0fJ\
+	    print(\"stop\") --Stops program on comptuer and turtles\
+	  elseif input == \"miner\" then\
+		id,message = rednet.receive() --Receives \"How far?\" from turtle\
+		print(message)\
+	  end\
+end\
+rednet.close(\"top\")\
+\
+--Need pastebin: wErUqGS2 on turtle for computer to talk to turtle\
+--Code by MrDubbyWubby",
+  },
+}
