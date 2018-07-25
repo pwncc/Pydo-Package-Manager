@@ -1,0 +1,29 @@
+{
+  {
+    "listen",
+    "--EDIT CODE INSIDE <> TO YOUR PERSONAL SETUP THEN GET RID OF THE <>\
+rednet.open(\"right\")\
+term.write(\"Listening\") textutils.slowPrint(\"...\", 5)\
+local function run()\
+  shell.run(command,arg) --Combines both inputs to create arguement and runs it\
+end\
+while true do\
+  id,command = rednet.receive() --First part of command\
+	if command == \"stop\" then\
+	  print(\"Disconnected\")\
+	  break\
+	elseif command == \"/help\" then\
+	  print(\"Fetching commands..\")\
+	elseif command == \"miner\" then\
+	  rednet.send(3671,\"How far?\") --Sends computer message\
+	  print(\"Fetching distance..\")\
+	  id,arg = rednet.receive() --Second part of command\
+	  run()\
+	end\
+end\
+rednet.close(\"right\")\
+\
+--Need pastebin: snHkQPES on computer for turtle to talk to computer\
+--Code by MrDubbyWubby",
+  },
+}
