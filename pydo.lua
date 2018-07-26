@@ -12,11 +12,16 @@ lib1 = fs.open("libs/puplib", "r")
 readall2 = lib1.readAll()
 lib1.close()
 
+--delete installer file if still there
+if fs.exists("installer") then
+fs.delete("installer")
+end
+
 
 if _G.checkupdated == nil then
 print("Checking for updates..")
-if readall == http.get("https://pastebin.com/raw/qJtuxiwF").readAll() then
-if readall2 == http.get("https://pastebin.com/raw/8CNB4w6u").readAll() then
+if readall == http.get("https://raw.githubusercontent.com/pwncc/Pydo-Package-Manager/master/pydo.lua").readAll() then
+if readall2 == http.get("https://raw.githubusercontent.com/pwncc/Pydo-Package-Manager/master/libs/puplib.lua").readAll() then
 print("Pydo is up to date!")
 _G.checkupdated = 1
 else
@@ -107,9 +112,9 @@ end
 elseif tArgs[1] == "update" then
 	fs.delete("pydo.lua")
 	fs.delete("libs/puplib")
-	shell.run("wget https://pastebin.com/raw/qJtuxiwF pydo.lua")
+	shell.run("wget https://raw.githubusercontent.com/pwncc/Pydo-Package-Manager/master/pydo.lua pydo.lua")
 	print("Installing libraries..")
-	shell.run("wget https://pastebin.com/raw/8CNB4w6u /libs/puplib")
+	shell.run("wget https://raw.githubusercontent.com/pwncc/Pydo-Package-Manager/master/libs/puplib.lua /libs/puplib")
 elseif tArgs[1] == "installed" then
 	local packagelist = fs.list("/.installed/")
 		for _, file in ipairs(packagelist) do
