@@ -1,5 +1,8 @@
 --make sure to add your repo both as reponame = "repourl" and in the table as reponame = "repourl"
 pwnrepo = "https://raw.githubusercontent.com/pwncc/repo/master/"
+squidrepo = "https://raw.githubusercontent.com/pwncc/squidrepo/master/"
+
 repotable = {
-pwnrepo = "https://raw.githubusercontent.com/pwncc/repo/master/"
+pwnrepo = "https://raw.githubusercontent.com/pwncc/repo/master/",
+squidrepo = "https://raw.githubusercontent.com/pwncc/squidrepo/master/"
 }
