@@ -2,7 +2,7 @@ local debounce = true
 local repoFiles = fs.list("/pydo/repos/")
 local repos = {}
 local repolist = fs.open("/pydo/repos/repolist", "r")
-local tArgs = {...}
+tArgs = {...}
 
 --check update
 pydo = fs.open("pydo.lua", "r")
@@ -17,6 +17,7 @@ if fs.exists("installer") then
 fs.delete("installer")
 end
 
+local repotable2= {}
 
 if _G.checkupdated == nil then
 print("Checking for updates..")
@@ -49,17 +50,23 @@ local function printhelp()
   print("Following functions")
   print(" ")
   print("help --prints help")
-  print("install (reponame) (packagename) --installs a package from the repo given")
-  print("installfile (file) --installs a package from file")
+  print("get(packagename) --installs a package from the repo given")
+  print("get -f (file) --installs a package from file")
   print("list (reponame) --for a list of packages in that repo")
   print("uninstall (packagename) --to uninstall a package")
   print("installed --to view installed packages")
   print("update --updates pydo")
   print("repolist --shows all repo's")
-  print("download (reponame) (packagename)")
+  print("download (packagename)")
   print("info (reponame OR 'file') (packagename OR filename)")
 end
 loadstring(repolist.readAll())()
+a = 1
+for i, v in pairs(repotable) do
+	repotable2[a] = repotable[i]
+	a = a + 1
+end
+
 if tArgs[1] == "repolist" then
 print(textutils.serialize(repotable))	
 elseif tArgs[1] == "help" then
@@ -131,7 +138,7 @@ elseif tArgs[1] == "uninstall" then
 	else
 		error("Package does not exist!")
 	end
-elseif tArgs[1] == "installfile" then
+elseif tArgs[1] == "get" and tArgs[2] == "-f" then
 	if fs.exists(tArgs[2]) then
 		shell.run("copy tArgs[2] /.installed/")
 		print("Installing..")
@@ -153,15 +160,46 @@ elseif tArgs[1] == "installfile" then
 	else
 print("File does not exist!")
 end
-elseif tArgs[1] == "download" then
-if tArgs[2] then
-		if tArgs[3] then
-  local site = http.get(repotable[tArgs[2]].."files/"..tArgs[3])
-		print(site)
+
+elseif tArgs[1] == "download"  then
+	print("get")
+	if tArgs[2] then
+		if tArgs[2] then
+		local q = 1
+		files = {}
+		filesite = {}
+		for i, v in pairs(repotable2) do
+		print(i)
+		local site = http.get(repotable2[i] .."files/"..tArgs[2])
+		local site2 = repotable2[i].."files/"..tArgs[2]
+		print("Checking.. "..site2)
 			if site then
 			print("Connected to repo")
-			local file = site.readAll()
-				if file then
+			filesite = site
+			if site.readAll() ~= nil then
+				files[q] = filesite.readAll()
+				filesite[q] = repotable2[i]
+				q = q + 1
+			end
+		end
+		end
+		if files[1] == nil then
+			print("File not found!")
+		elseif #files > 1 then
+			print("We have the following sites which have this package")
+			print(" ")
+			for i, v in pairs(files) do
+				print(i.. ". "..filesite[i])
+				print(" ")
+			end
+			print("")
+			print("Enter the number of the site you want the package from :")
+			rekt = read()
+			if rekt then
+			local site = http.get(filesite[tonumber(rekt)].."files/"..tArgs[2])
+			if site then
+			print("Connected to repo")
+			file = site.readAll()
 				temporary = fs.open(".temporary", "w")
 				temporary.write(file)
 				temporary.close()
@@ -173,26 +211,81 @@ if tArgs[2] then
 				else
 				error("The file contains nothing! Or was never fetched!")
 			end
-		end
-		else
-		error("I was not able to fetch the file! Did you spell it correctly?")
-	end
-end
-elseif tArgs[1] == "install"  then
-	if tArgs[2] then
-		if tArgs[3] then
-  local site = http.get(repotable[tArgs[2]].."files/"..tArgs[3])
-		print(site)
+			end
+elseif #files == 1 then
+	local rekt = 1
+	site = http.get(filesite[tonumber(rekt)].."files/"..tArgs[2])
 			if site then
 			print("Connected to repo")
-			local file = site.readAll()
+			print(site)
+			file = site.readAll()
 				if file then
 				temporary = fs.open(".temporary", "w")
 				temporary.write(file)
 				temporary.close()
 				print("Grabbed file..")
 				sleep(1)
-				shell.run("copy .temporary /.installed/"..tArgs[3])
+				shell.run("copy .temporary /pydo/downloads/"..tArgs[2]..".pyd")
+				sleep(1)
+				print("...Done! The file is downloaded in /pydo/downloads/ !")
+				else
+				error("The file contains nothing! Or was never fetched!")
+				end
+			end
+			end
+			end
+			else
+		error("I was not able to fetch the file! Did you spell it correctly?")
+	end
+	
+elseif tArgs[1] == "get"  then
+	print("get")
+	if tArgs[2] then
+		if tArgs[2] then
+		local q = 1
+		files = {}
+		filesite = {}
+		for i, v in pairs(repotable2) do
+		print(i)
+		local site = http.get(repotable2[i] .."files/"..tArgs[2])
+		local site2 = repotable2[i].."files/"..tArgs[2]
+		print("Checking.. "..site2)
+			if site then
+			print("Connected to repo")
+			filesite = site
+			if site.readAll() ~= nil then
+				files[q] = filesite.readAll()
+
+				filesite[q] = repotable2[i]
+				q = q + 1
+			end
+		end
+		end
+		if files[1] == nil then
+			print("File not found!")
+		elseif #files > 1 then
+			print("We have the following sites which have this package")
+			print(" ")
+			for i, v in pairs(files) do
+				print(i.. ". "..filesite[i])
+				print(" ")
+			end
+			print("")
+			print("Enter the number of the site you want the package from :")
+			rekt = read()
+			if rekt then
+			local site = http.get(filesite[tonumber(rekt)].."files/"..tArgs[2])
+			if site then
+			print("Connected to repo")
+			file = site.readAll()
+				if file then
+				temporary = fs.open(".temporary", "w")
+				temporary.write(file)
+				temporary.close()
+				print("Grabbed file..")
+				sleep(1)
+				
+				shell.run("copy .temporary /.installed/"..tArgs[2])
 				pup.unpack(".temporary", "/")
 				print("Installing..")
 				sleep(1)
@@ -213,11 +306,49 @@ elseif tArgs[1] == "install"  then
 				else
 				error("The file contains nothing! Or was never fetched!")
 			end
+			end
 		end
+elseif #files == 1 then
+	local rekt = 1
+	local site = http.get(filesite[tonumber(rekt)].."files/"..tArgs[2])
+			if site then
+			print("Connected to repo")
+			file = site.readAll()
+				if file then
+				temporary = fs.open(".temporary", "w")
+				temporary.write(file)
+				temporary.close()
+				print("Grabbed file..")
+				sleep(1)
+				
+				shell.run("copy .temporary /.installed/"..tArgs[2])
+				pup.unpack(".temporary", "/")
+				print("Installing..")
+				sleep(1)
+				print("...Done!")
+				print("Checking for installer file..")
+				if fs.exists("installer") then
+				print("Found.. Running...")
+				sleep(1)
+				shell.run("installer")
+				sleep(3)
+				print("Deleting installer..")
+				fs.delete("/installer")
+				sleep(1)
+				print("Done!")
+				else
+				print("Is not there. Most likely not required!")
+				end
+				else
+				error("The file contains nothing! Or was never fetched!")
+			end
+			end
+	end
+end
+
 		else
 		error("I was not able to fetch the file! Did you spell it correctly?")
 	end
-end
 else
   if tArgs[1] == "list" then
     if tArgs[2] then
